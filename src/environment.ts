@@ -7,7 +7,7 @@ export interface Environment {
 }
 
 export class Environment {
-  public constructor(private readonly record: Map<string, any> = new Map()) {}
+  public constructor(private readonly record: Map<any, any> = new Map()) {}
 
   public define<T>(name: string, value: T): any {
     this.record.set(name, value);
