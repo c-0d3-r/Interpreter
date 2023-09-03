@@ -32,6 +32,7 @@ class Eva {
 
 const eva = new Eva();
 
+// Math
 assert.strictEqual(eva.eval(1), 1);
 assert.strictEqual(eva.eval(true), true);
 assert.strictEqual(eva.eval('"1"'), '1');
@@ -39,3 +40,5 @@ assert.strictEqual(eva.eval(['+', 1, 2]), 3);
 assert.strictEqual(eva.eval(['+', ['+', 1, 2], 3]), 6);
 assert.strictEqual(eva.eval(['*', ['+', 1, 2], 3]), 9);
 assert.strictEqual(eva.eval(['-', ['+', 1, 2], 3]), 0);
+
+// Variables
