@@ -1,11 +1,21 @@
 import assert                            from 'assert';
 import { isBoolean, isNumber, isString } from './utils';
+import { Environment }                   from './environment';
 
+// type Operator = '+' | '*' | '-' | '/' | 'var';
+
+// type Expression<T> = T extends [infer O, infer Arg1, infer Arg2]
+//   ? O extends Extract<Operator, 'var'>
+//     ? ['var', Arg1, Arg2]
+//     : [O, Expression<Arg1>, Expression<Arg2>]
+//   : T;
 /**
  * Eva interpreter
  */
 class Eva {
-  public eval<T>(exp: T): any {
+  public constructor(private readonly global = new Environment()) {}
+
+  public eval<const T>(exp: T, env = this.global): any {
     if (isNumber(exp)) return exp;
 
     if (isBoolean(exp)) return exp;
@@ -20,9 +30,15 @@ class Eva {
       if (exp[0] === '/') return this.eval(exp[1]) / this.eval(exp[2]);
 
       if (exp[0] === '-') return this.eval(exp[1]) - this.eval(exp[2]);
+
+      if (exp[0] === 'var') {
+        const [_, name, value] = exp;
+
+        return env.define(name, value);
+      }
     }
 
-    throw 'Not implemented';
+    throw `Unimplemented: ${exp}`;
   }
 }
 
@@ -42,3 +58,4 @@ assert.strictEqual(eva.eval(['*', ['+', 1, 2], 3]), 9);
 assert.strictEqual(eva.eval(['-', ['+', 1, 2], 3]), 0);
 
 // Variables
+assert.strictEqual(eva.eval(['var', 'x', 1]), 1);
