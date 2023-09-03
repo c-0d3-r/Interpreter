@@ -14,7 +14,16 @@ import { isVariableName }                from './utils/is-variable-name.utils';
  * Eva interpreter
  */
 class Eva {
-  public constructor(private readonly global = new Environment()) {}
+  public constructor(
+    private readonly global = new Environment(
+      new Map<any, any>([
+        [null, null],
+        [true, true],
+        [false, false],
+        ['VERSION', '1.0.0'],
+      ])
+    )
+  ) {}
 
   public eval<const T>(exp: T, env = this.global): any {
     if (isNumber(exp)) return exp;
@@ -65,3 +74,4 @@ assert.strictEqual(eva.eval(['-', ['+', 1, 2], 3]), 0);
 // Variables
 assert.strictEqual(eva.eval(['var', 'x', 1]), 1);
 assert.strictEqual(eva.eval('x'), 1);
+assert.strictEqual(eva.eval('VERSION'), '1.0.0');
