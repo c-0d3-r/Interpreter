@@ -1,6 +1,7 @@
 import assert                            from 'assert';
 import { isBoolean, isNumber, isString } from './utils';
 import { Environment }                   from './environment';
+import { isVariableName }                from './utils/is-variable-name.utils';
 
 // type Operator = '+' | '*' | '-' | '/' | 'var';
 
@@ -38,6 +39,10 @@ class Eva {
       }
     }
 
+    if (isVariableName(exp)) {
+      return env.lookup(exp);
+    }
+
     throw `Unimplemented: ${exp}`;
   }
 }
@@ -59,3 +64,4 @@ assert.strictEqual(eva.eval(['-', ['+', 1, 2], 3]), 0);
 
 // Variables
 assert.strictEqual(eva.eval(['var', 'x', 1]), 1);
+assert.strictEqual(eva.eval('x'), 1);
