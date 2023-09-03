@@ -44,7 +44,7 @@ class Eva {
       if (exp[0] === 'var') {
         const [_, name, value] = exp;
 
-        return env.define(name, value);
+        return env.define(name, this.eval(value));
       }
     }
 
@@ -75,3 +75,6 @@ assert.strictEqual(eva.eval(['-', ['+', 1, 2], 3]), 0);
 assert.strictEqual(eva.eval(['var', 'x', 1]), 1);
 assert.strictEqual(eva.eval('x'), 1);
 assert.strictEqual(eva.eval('VERSION'), '1.0.0');
+assert.strictEqual(eva.eval(['var', 'isUser', true]), true);
+assert.strictEqual(eva.eval('isUser'), true);
+assert.strictEqual(eva.eval(['var', 'y', ['+', 1, 2]]), 3);
