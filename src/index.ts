@@ -14,6 +14,8 @@ class Eva {
 
     if (Array.isArray(exp)) {
       if (exp[0] === '+') return this.eval(exp[1]) + this.eval(exp[2]);
+
+      if (exp[0] === '*') return this.eval(exp[1]) * this.eval(exp[2]);
     }
 
     throw 'Not implemented';
@@ -31,3 +33,4 @@ assert.strictEqual(eva.eval(true), true);
 assert.strictEqual(eva.eval('"1"'), '1');
 assert.strictEqual(eva.eval(['+', 1, 2]), 3);
 assert.strictEqual(eva.eval(['+', ['+', 1, 2], 3]), 6);
+assert.strictEqual(eva.eval(['*', ['+', 1, 2], 3]), 9);
