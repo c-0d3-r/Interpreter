@@ -13,6 +13,7 @@ enum Operator {
 enum Keyword {
   VAR = 'var',
   BEGIN = 'begin',
+  SET = 'set',
 }
 
 /**
@@ -54,6 +55,12 @@ class Eva {
         const [_, name, value] = exp;
 
         return env.define(name, this.eval(value, env));
+      }
+
+      if (exp[0] === Keyword.SET) {
+        const [_, name, value] = exp;
+
+        return env.assign(name, value);
       }
 
       if (exp[0] === Keyword.BEGIN) {
@@ -131,5 +138,9 @@ assert.strictEqual(
     ['var', 'result', ['begin', ['var', 'x', ['+', 'value', 10]], 'x']],
     'result',
   ]),
+  20
+);
+assert.strictEqual(
+  eva.eval(['begin', ['var', 'value', 10], ['begin', ['set', 'value', 20]]]),
   20
 );
