@@ -12,8 +12,14 @@ export class Environment {
     public parent: Environment | null = null
   ) {}
 
-  public define<T>(name: string, value: T): any {
+  public define<T>(name: string, value: T): T {
     this.record.set(name, value);
+
+    return value;
+  }
+
+  public assign<T>(name: string, value: T): T {
+    this.resolve(name).record.set(name, value);
 
     return value;
   }
