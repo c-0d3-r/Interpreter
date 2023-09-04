@@ -39,30 +39,32 @@ class Eva {
 
     if (Array.isArray(exp)) {
       if (exp[0] === Operator.PLUS)
-        return this.eval(exp[1]) + this.eval(exp[2]);
+        return this.eval(exp[1], env) + this.eval(exp[2], env);
 
       if (exp[0] === Operator.MULTIPLY)
-        return this.eval(exp[1]) * this.eval(exp[2]);
+        return this.eval(exp[1], env) * this.eval(exp[2], env);
 
       if (exp[0] === Operator.DIVIDE)
-        return this.eval(exp[1]) / this.eval(exp[2]);
+        return this.eval(exp[1], env) / this.eval(exp[2], env);
 
       if (exp[0] === Operator.MINUS)
-        return this.eval(exp[1]) - this.eval(exp[2]);
+        return this.eval(exp[1], env) - this.eval(exp[2], env);
 
       if (exp[0] === Keyword.VAR) {
         const [_, name, value] = exp;
 
-        return env.define(name, this.eval(value));
+        return env.define(name, this.eval(value, env));
       }
 
       if (exp[0] === Keyword.BEGIN) {
+        const nestedEnv = new Environment(new Map<any, any>(), env);
+
         const [_, ...rest] = exp;
 
         let result: any;
 
         for (const exp of rest) {
-          result = this.eval(exp, env);
+          result = this.eval(exp, nestedEnv);
         }
 
         return result;
@@ -109,4 +111,25 @@ assert.strictEqual(
     ['+', ['*', 'x', 'y'], 30],
   ]),
   230
+);
+assert.strictEqual(
+  eva.eval([
+    'begin',
+    ['var', 'x', 1],
+    ['begin', ['var', 'y', 2], ['+', ['*', 'x', 'y'], 3]],
+  ]),
+  5
+);
+assert.strictEqual(
+  eva.eval(['begin', ['var', 'x', 1], ['begin', ['var', 'x', 5]], 'x']),
+  1
+);
+assert.strictEqual(
+  eva.eval([
+    'begin',
+    ['var', 'value', 10],
+    ['var', 'result', ['begin', ['var', 'x', ['+', 'value', 10]], 'x']],
+    'result',
+  ]),
+  20
 );
