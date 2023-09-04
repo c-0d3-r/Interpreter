@@ -7,7 +7,10 @@ export interface Environment {
 }
 
 export class Environment {
-  public constructor(private readonly record: Map<any, any> = new Map()) {}
+  public constructor(
+    private readonly record: Map<any, any> = new Map(),
+    public parent: Environment | null = null
+  ) {}
 
   public define<T>(name: string, value: T): any {
     this.record.set(name, value);
@@ -15,13 +18,17 @@ export class Environment {
     return value;
   }
 
-  public lookup(name: string) {
-    const variable = this.record.get(name);
+  public lookup(name: string): any {
+    return this.resolve(name).record.get(name);
+  }
 
-    if (!variable) {
+  private resolve(name: string): Environment | never {
+    if (this.record.has(name)) return this;
+
+    if (!this.parent) {
       throw new ReferenceError(`Undefined variable: ${name}`);
     }
 
-    return variable;
+    return this.parent.resolve(name);
   }
 }
