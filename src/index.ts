@@ -3,13 +3,18 @@ import { isBoolean, isNumber, isString } from './utils';
 import { Environment }                   from './environment';
 import { isVariableName }                from './utils/is-variable-name.utils';
 
-// type Operator = '+' | '*' | '-' | '/' | 'var';
+enum Operator {
+  PLUS = '+',
+  MINUS = '-',
+  MULTIPLY = '*',
+  DIVIDE = '/',
+}
 
-// type Expression<T> = T extends [infer O, infer Arg1, infer Arg2]
-//   ? O extends Extract<Operator, 'var'>
-//     ? ['var', Arg1, Arg2]
-//     : [O, Expression<Arg1>, Expression<Arg2>]
-//   : T;
+enum Keyword {
+  VAR = 'var',
+  BEGIN = 'begin',
+}
+
 /**
  * Eva interpreter
  */
@@ -33,18 +38,34 @@ class Eva {
     if (isString(exp)) return exp.slice(1, -1);
 
     if (Array.isArray(exp)) {
-      if (exp[0] === '+') return this.eval(exp[1]) + this.eval(exp[2]);
+      if (exp[0] === Operator.PLUS)
+        return this.eval(exp[1]) + this.eval(exp[2]);
 
-      if (exp[0] === '*') return this.eval(exp[1]) * this.eval(exp[2]);
+      if (exp[0] === Operator.MULTIPLY)
+        return this.eval(exp[1]) * this.eval(exp[2]);
 
-      if (exp[0] === '/') return this.eval(exp[1]) / this.eval(exp[2]);
+      if (exp[0] === Operator.DIVIDE)
+        return this.eval(exp[1]) / this.eval(exp[2]);
 
-      if (exp[0] === '-') return this.eval(exp[1]) - this.eval(exp[2]);
+      if (exp[0] === Operator.MINUS)
+        return this.eval(exp[1]) - this.eval(exp[2]);
 
-      if (exp[0] === 'var') {
+      if (exp[0] === Keyword.VAR) {
         const [_, name, value] = exp;
 
         return env.define(name, this.eval(value));
+      }
+
+      if (exp[0] === Keyword.BEGIN) {
+        const [_, ...rest] = exp;
+
+        let result: any;
+
+        for (const exp of rest) {
+          result = this.eval(exp, env);
+        }
+
+        return result;
       }
     }
 
@@ -78,3 +99,14 @@ assert.strictEqual(eva.eval('VERSION'), '1.0.0');
 assert.strictEqual(eva.eval(['var', 'isUser', true]), true);
 assert.strictEqual(eva.eval('isUser'), true);
 assert.strictEqual(eva.eval(['var', 'y', ['+', 1, 2]]), 3);
+
+// Blocks
+assert.strictEqual(
+  eva.eval([
+    'begin',
+    ['var', 'x', 10],
+    ['var', 'y', 20],
+    ['+', ['*', 'x', 'y'], 30],
+  ]),
+  230
+);
