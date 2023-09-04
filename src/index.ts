@@ -2,19 +2,7 @@ import assert                            from 'assert';
 import { isBoolean, isNumber, isString } from './utils';
 import { Environment }                   from './environment';
 import { isVariableName }                from './utils/is-variable-name.utils';
-
-enum Operator {
-  PLUS = '+',
-  MINUS = '-',
-  MULTIPLY = '*',
-  DIVIDE = '/',
-}
-
-enum Keyword {
-  VAR = 'var',
-  BEGIN = 'begin',
-  SET = 'set',
-}
+import { Keyword, Operator }             from './enums';
 
 /**
  * Eva interpreter
